@@ -1,19 +1,28 @@
 ---
-# Routes for PROD environment — all traffic without a /dev prefix goes to finance-prod
+# ── PROD: API routes — strips /api/v1/ prefix before forwarding ──────────────
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: finance-prod-routes
+  name: finance-prod-api-routes
   namespace: gate
+  labels:
+    app.kubernetes.io/part-of: finance-app
 spec:
   parentRefs:
     - name: finance-gateway
       namespace: gate
+      sectionName: http
   rules:
     - matches:
         - path:
             type: PathPrefix
             value: /api/v1/auth
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /auth
       backendRefs:
         - name: user-service
           namespace: finance-prod
@@ -22,6 +31,12 @@ spec:
         - path:
             type: PathPrefix
             value: /api/v1/users
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /users
       backendRefs:
         - name: user-service
           namespace: finance-prod
@@ -30,6 +45,12 @@ spec:
         - path:
             type: PathPrefix
             value: /api/v1/transactions
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /transactions
       backendRefs:
         - name: transaction-service
           namespace: finance-prod
@@ -38,10 +59,31 @@ spec:
         - path:
             type: PathPrefix
             value: /api/v1/notifications
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /notifications
       backendRefs:
         - name: notification-service
           namespace: finance-prod
           port: 5003
+---
+# ── PROD: Frontend catch-all ──────────────────────────────────────────────────
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: finance-prod-frontend-route
+  namespace: gate
+  labels:
+    app.kubernetes.io/part-of: finance-app
+spec:
+  parentRefs:
+    - name: finance-gateway
+      namespace: gate
+      sectionName: http
+  rules:
     - matches:
         - path:
             type: PathPrefix
@@ -51,21 +93,30 @@ spec:
           namespace: finance-prod
           port: 80
 ---
-# Routes for DEV environment — all /dev/* traffic is forwarded to finance-dev
+# ── DEV: API routes — strips /dev/api/v1/ prefix before forwarding ───────────
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: finance-dev-routes
+  name: finance-dev-api-routes
   namespace: gate
+  labels:
+    app.kubernetes.io/part-of: finance-app
 spec:
   parentRefs:
     - name: finance-gateway
       namespace: gate
+      sectionName: http
   rules:
     - matches:
         - path:
             type: PathPrefix
             value: /dev/api/v1/auth
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /auth
       backendRefs:
         - name: user-service
           namespace: finance-dev
@@ -74,6 +125,12 @@ spec:
         - path:
             type: PathPrefix
             value: /dev/api/v1/users
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /users
       backendRefs:
         - name: user-service
           namespace: finance-dev
@@ -82,6 +139,12 @@ spec:
         - path:
             type: PathPrefix
             value: /dev/api/v1/transactions
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /transactions
       backendRefs:
         - name: transaction-service
           namespace: finance-dev
@@ -90,10 +153,31 @@ spec:
         - path:
             type: PathPrefix
             value: /dev/api/v1/notifications
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /notifications
       backendRefs:
         - name: notification-service
           namespace: finance-dev
           port: 5003
+---
+# ── DEV: Frontend catch-all ───────────────────────────────────────────────────
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: finance-dev-frontend-route
+  namespace: gate
+  labels:
+    app.kubernetes.io/part-of: finance-app
+spec:
+  parentRefs:
+    - name: finance-gateway
+      namespace: gate
+      sectionName: http
+  rules:
     - matches:
         - path:
             type: PathPrefix

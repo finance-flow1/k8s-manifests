@@ -2,37 +2,28 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: user-service-netpol
+  name: frontend-netpol
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "user-service.labels" . | nindent 4 }}
+    {{- include "frontend.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      {{- include "user-service.selectorLabels" . | nindent 6 }}
+      {{- include "frontend.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
     - Egress
   ingress:
     # Allow traffic from kgateway/Envoy proxy in gate namespace only
-    # Frontend is a static SPA — API calls come through the gateway, not directly
     - from:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: gate
       ports:
         - protocol: TCP
-          port: 5001
+          port: 80
   egress:
-    # Allow outbound to postgres
-    - to:
-        - podSelector:
-            matchLabels:
-              app.kubernetes.io/name: postgres
-      ports:
-        - protocol: TCP
-          port: 5432
-    # Allow DNS
+    # DNS only — frontend is a static SPA, API calls go browser → gateway → backend
     - to: []
       ports:
         - protocol: UDP

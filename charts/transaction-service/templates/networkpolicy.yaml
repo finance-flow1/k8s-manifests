@@ -2,27 +2,26 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: user-service-netpol
+  name: transaction-service-netpol
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "user-service.labels" . | nindent 4 }}
+    {{- include "transaction-service.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      {{- include "user-service.selectorLabels" . | nindent 6 }}
+      {{- include "transaction-service.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
     - Egress
   ingress:
-    # Allow traffic from kgateway/Envoy proxy in gate namespace only
-    # Frontend is a static SPA — API calls come through the gateway, not directly
+    # Allow traffic from kgateway/Envoy proxy in gate namespace
     - from:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: gate
       ports:
         - protocol: TCP
-          port: 5001
+          port: 5002
   egress:
     # Allow outbound to postgres
     - to:
@@ -32,6 +31,14 @@ spec:
       ports:
         - protocol: TCP
           port: 5432
+    # Allow outbound to rabbitmq (producer)
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: rabbitmq
+      ports:
+        - protocol: TCP
+          port: 5672
     # Allow DNS
     - to: []
       ports:

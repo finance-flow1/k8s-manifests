@@ -64,7 +64,7 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - pg_isready -U $(POSTGRES_USER) -d $(USER_DB_NAME)
+                - pg_isready -U $POSTGRES_USER -d $USER_DB_NAME
             initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 5
@@ -74,7 +74,7 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - pg_isready -U $(POSTGRES_USER) -d $(USER_DB_NAME)
+                - pg_isready -U $POSTGRES_USER -d $USER_DB_NAME
             initialDelaySeconds: 30
             periodSeconds: 20
             timeoutSeconds: 5
