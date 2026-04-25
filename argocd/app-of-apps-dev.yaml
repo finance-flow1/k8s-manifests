@@ -12,10 +12,10 @@ spec:
   source:
     repoURL: https://github.com/finance-flow1/k8s-manifests.git
     targetRevision: HEAD
-    path: argocd/dev
+    path: environments/dev
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: finance-dev
   syncPolicy:
     automated:
       prune: true

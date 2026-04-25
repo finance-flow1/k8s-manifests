@@ -1,0 +1,81 @@
+# ──────────────────────────────────────────────────────────────────────
+# DEV environment values — all sub-chart overrides in one file.
+# Keys match sub-chart names. CD pipeline patches <subchart>.image.tag.
+# ──────────────────────────────────────────────────────────────────────
+
+frontend:
+  replicaCount: 1
+  image:
+    tag: "latest"   # <- overwritten by CD pipeline on dev push
+  resources:
+    requests:
+      cpu: 30m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+  hpa:
+    enabled: false
+
+user-service:
+  replicaCount: 1
+  image:
+    tag: "latest"   # <- overwritten by CD pipeline on dev push
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  hpa:
+    enabled: false
+  env:
+    NODE_ENV: development
+
+transaction-service:
+  replicaCount: 1
+  image:
+    tag: "latest"   # <- overwritten by CD pipeline on dev push
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  hpa:
+    enabled: false
+  env:
+    NODE_ENV: development
+
+notification-service:
+  replicaCount: 1
+  image:
+    tag: "latest"   # <- overwritten by CD pipeline on dev push
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  hpa:
+    enabled: false
+  env:
+    NODE_ENV: development
+
+postgres:
+  storage:
+    storageClassName: standard
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+rabbitmq:
+  replicaCount: 1

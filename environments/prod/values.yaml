@@ -1,0 +1,65 @@
+# ──────────────────────────────────────────────────────────────────────
+# PROD environment values — all sub-chart overrides in one file.
+# Keys match sub-chart names. CD pipeline patches <subchart>.image.tag.
+# ──────────────────────────────────────────────────────────────────────
+
+frontend:
+  replicaCount: 3
+  image:
+    tag: "latest"   # <- overwritten by CD pipeline on main push
+  hpa:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    cpuUtilization: 60
+
+user-service:
+  replicaCount: 2
+  image:
+    tag: "latest"   # <- overwritten by CD pipeline on main push
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    cpuUtilization: 70
+  env:
+    NODE_ENV: production
+
+transaction-service:
+  replicaCount: 2
+  image:
+    tag: "latest"   # <- overwritten by CD pipeline on main push
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 8
+    cpuUtilization: 65
+  env:
+    NODE_ENV: production
+
+notification-service:
+  replicaCount: 2
+  image:
+    tag: "latest"   # <- overwritten by CD pipeline on main push
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    cpuUtilization: 70
+  env:
+    NODE_ENV: production
+
+postgres:
+  storage:
+    storageClassName: nfs-storage
+    size: 20Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+rabbitmq:
+  replicaCount: 1

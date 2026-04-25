@@ -1,0 +1,25 @@
+apiVersion: v2
+name: finance-prod
+description: FinanceFlow – Prod Environment Umbrella Chart
+type: application
+version: 1.0.0
+
+dependencies:
+  - name: frontend
+    version: "1.0.0"
+    repository: "file://../../charts/frontend"
+  - name: user-service
+    version: "1.0.0"
+    repository: "file://../../charts/user-service"
+  - name: transaction-service
+    version: "1.0.0"
+    repository: "file://../../charts/transaction-service"
+  - name: notification-service
+    version: "1.0.0"
+    repository: "file://../../charts/notification-service"
+  - name: postgres
+    version: "1.0.0"
+    repository: "file://../../charts/postgres"
+  - name: rabbitmq
+    version: "1.0.0"
+    repository: "file://../../charts/rabbitmq"
