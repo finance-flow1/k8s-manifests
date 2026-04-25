@@ -20,6 +20,8 @@ kubectl create secret generic jwt-secret \
 
 kubectl create secret generic rabbitmq-secret \
   --namespace=finance-dev \
+  --from-literal=RABBITMQ_USER=guest \
+  --from-literal=RABBITMQ_PASSWORD=guest \
   --from-literal=RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672 \
   --dry-run=client -o yaml | kubectl apply -f -
 
@@ -42,6 +44,8 @@ kubectl create secret generic jwt-secret \
 
 kubectl create secret generic rabbitmq-secret \
   --namespace=finance-prod \
+  --from-literal=RABBITMQ_USER=guest \
+  --from-literal=RABBITMQ_PASSWORD=guest \
   --from-literal=RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672 \
   --dry-run=client -o yaml | kubectl apply -f -
 
