@@ -6,8 +6,8 @@ metadata:
   namespace: finance-dev
 spec:
   parentRefs:
-    - name: finance-dev-gateway
-      namespace: finance-dev
+    - name: finance-gateway
+      namespace: gate
   rules:
     - matches:
         - path:
