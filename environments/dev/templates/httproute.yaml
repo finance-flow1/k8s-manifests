@@ -1,39 +1,15 @@
 ---
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
+# Allows HTTPRoutes in 'gate' namespace to reference backend services in 'finance-dev'
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
 metadata:
-  name: finance-dev-routes
+  name: allow-gate-to-finance-dev
   namespace: finance-dev
 spec:
-  parentRefs:
-    - name: finance-gateway
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
       namespace: gate
-  rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /api/users
-      backendRefs:
-        - name: user-service
-          port: 5001
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /api/transactions
-      backendRefs:
-        - name: transaction-service
-          port: 5002
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /api/notifications
-      backendRefs:
-        - name: notification-service
-          port: 5003
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
-        - name: frontend
-          port: 80
+  to:
+    - group: ""
+      kind: Service
