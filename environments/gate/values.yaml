@@ -1,0 +1,12 @@
+# ──────────────────────────────────────────────────────────────────────
+# Gate environment values.
+# This chart has no sub-chart dependencies — values here control the
+# Gateway and HTTPRoute resources deployed in the 'gate' namespace.
+# ──────────────────────────────────────────────────────────────────────
+
+gateway:
+  name: finance-gateway
+  gatewayClassName: eg
+  listener:
+    port: 80
+    protocol: HTTP

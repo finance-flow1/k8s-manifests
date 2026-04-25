@@ -1,15 +1,2 @@
----
-# Allows HTTPRoutes in 'gate' namespace to reference backend services in 'finance-prod'
-apiVersion: gateway.networking.k8s.io/v1beta1
-kind: ReferenceGrant
-metadata:
-  name: allow-gate-to-finance-prod
-  namespace: finance-prod
-spec:
-  from:
-    - group: gateway.networking.k8s.io
-      kind: HTTPRoute
-      namespace: gate
-  to:
-    - group: ""
-      kind: Service
+# ReferenceGrant moved to referencegrant.yaml (correctly named).
+# This file is intentionally empty — Helm renders comment-only files as no-ops.

@@ -1,0 +1,104 @@
+---
+# Routes for PROD environment — all traffic without a /dev prefix goes to finance-prod
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: finance-prod-routes
+  namespace: gate
+spec:
+  parentRefs:
+    - name: finance-gateway
+      namespace: gate
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/auth
+      backendRefs:
+        - name: user-service
+          namespace: finance-prod
+          port: 5001
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/users
+      backendRefs:
+        - name: user-service
+          namespace: finance-prod
+          port: 5001
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/transactions
+      backendRefs:
+        - name: transaction-service
+          namespace: finance-prod
+          port: 5002
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/v1/notifications
+      backendRefs:
+        - name: notification-service
+          namespace: finance-prod
+          port: 5003
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: frontend
+          namespace: finance-prod
+          port: 80
+---
+# Routes for DEV environment — all /dev/* traffic is forwarded to finance-dev
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: finance-dev-routes
+  namespace: gate
+spec:
+  parentRefs:
+    - name: finance-gateway
+      namespace: gate
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /dev/api/v1/auth
+      backendRefs:
+        - name: user-service
+          namespace: finance-dev
+          port: 5001
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /dev/api/v1/users
+      backendRefs:
+        - name: user-service
+          namespace: finance-dev
+          port: 5001
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /dev/api/v1/transactions
+      backendRefs:
+        - name: transaction-service
+          namespace: finance-dev
+          port: 5002
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /dev/api/v1/notifications
+      backendRefs:
+        - name: notification-service
+          namespace: finance-dev
+          port: 5003
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /dev
+      backendRefs:
+        - name: frontend
+          namespace: finance-dev
+          port: 80
