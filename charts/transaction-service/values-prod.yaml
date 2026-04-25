@@ -1,0 +1,9 @@
+replicaCount: 2
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  cpuUtilization: 65
+  memoryUtilization: 80
+env:
+  NODE_ENV: production

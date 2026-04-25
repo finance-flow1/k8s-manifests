@@ -1,0 +1,6 @@
+apiVersion: v2
+name: transaction-service
+description: FinanceFlow Transaction Service — Finance & Analytics Domain
+type: application
+version: 1.0.0
+appVersion: "1.0.0"

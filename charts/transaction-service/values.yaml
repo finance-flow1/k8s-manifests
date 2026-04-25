@@ -1,0 +1,57 @@
+replicaCount: 1
+
+image:
+  repository: aswin1015/financeflow-transactionservice
+  pullPolicy: Always
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 5002
+  targetPort: 5002
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+
+hpa:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 8
+  cpuUtilization: 65
+  memoryUtilization: 80
+
+probes:
+  readiness:
+    path: /health
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  liveness:
+    path: /health
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+env:
+  PORT: "5002"
+  NODE_ENV: production
+  DB_HOST: postgres
+  DB_PORT: "5432"
+
+secrets:
+  postgres: postgres-secret
+  jwt: jwt-secret
+  rabbitmq: rabbitmq-secret
+
+serviceAccount:
+  name: finance-app-sa
+
+networkPolicy:
+  enabled: true

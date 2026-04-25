@@ -1,0 +1,35 @@
+# =============================================================================
+#  ArgoCD Application — user-service (DEV)
+#  Watches: finance-flow1/k8s-manifests  charts/user-service/
+#  Target:  finance-dev namespace
+# =============================================================================
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: user-service-dev
+  namespace: argocd
+  labels:
+    env: dev
+    app: user-service
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/finance-flow1/k8s-manifests.git
+    targetRevision: HEAD
+    path: charts/user-service
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-dev.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: finance-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground

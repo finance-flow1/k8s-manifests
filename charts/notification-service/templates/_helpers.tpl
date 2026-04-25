@@ -1,0 +1,15 @@
+{{- define "notification-service.name" -}}notification-service{{- end }}
+{{- define "notification-service.fullname" -}}{{- .Release.Name | trunc 63 | trimSuffix "-" }}{{- end }}
+{{- define "notification-service.labels" -}}
+helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+app.kubernetes.io/name: notification-service
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/part-of: finance-app
+app.kubernetes.io/component: microservice
+{{- end }}
+{{- define "notification-service.selectorLabels" -}}
+app.kubernetes.io/name: notification-service
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

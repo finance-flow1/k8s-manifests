@@ -1,0 +1,23 @@
+# ──────────────────────────────────────────────────
+# PROD overrides — HPA enabled, higher replicas
+# ──────────────────────────────────────────────────
+
+replicaCount: 2
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  cpuUtilization: 70
+  memoryUtilization: 80
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+
+env:
+  NODE_ENV: production
