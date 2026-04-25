@@ -1,0 +1,15 @@
+---
+# Allows the Gateway in 'gate' namespace to reference services in 'finance-dev'
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: allow-gate-to-finance-dev
+  namespace: finance-dev
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: gate
+  to:
+    - group: ""
+      kind: Service
