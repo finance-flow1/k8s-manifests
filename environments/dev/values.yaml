@@ -67,7 +67,7 @@ notification-service:
 
 postgres:
   storage:
-    storageClassName: standard
+    storageClassName: nfs-storage
     size: 5Gi
   resources:
     requests:
