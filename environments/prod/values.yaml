@@ -6,12 +6,13 @@
 frontend:
   replicaCount: 3
   image:
-    tag: "latest" # <- overwritten by CD pipeline on main push
+    tag: "latest"   # <- overwritten by CD pipeline on main push
   hpa:
     enabled: true
     minReplicas: 3
     maxReplicas: 10
     cpuUtilization: 60
+
 user-service:
   replicaCount: 2
   image:
@@ -23,10 +24,11 @@ user-service:
     cpuUtilization: 70
   env:
     NODE_ENV: production
+
 transaction-service:
   replicaCount: 2
   image:
-    tag: "latest" # <- overwritten by CD pipeline on main push
+    tag: "latest"   # <- overwritten by CD pipeline on main push
   hpa:
     enabled: true
     minReplicas: 2
@@ -34,10 +36,11 @@ transaction-service:
     cpuUtilization: 65
   env:
     NODE_ENV: production
+
 notification-service:
   replicaCount: 2
   image:
-    tag: "latest" # <- overwritten by CD pipeline on main push
+    tag: "latest"   # <- overwritten by CD pipeline on main push
   hpa:
     enabled: true
     minReplicas: 2
@@ -45,6 +48,7 @@ notification-service:
     cpuUtilization: 70
   env:
     NODE_ENV: production
+
 postgres:
   storage:
     storageClassName: nfs-storage
@@ -56,8 +60,6 @@ postgres:
     limits:
       cpu: 500m
       memory: 512Mi
+
 rabbitmq:
   replicaCount: 1
-financeflow-userservice:
-  image:
-    tag: v0.1.0
