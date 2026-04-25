@@ -6,7 +6,7 @@
 frontend:
   replicaCount: 1
   image:
-    tag: "latest" # <- overwritten by CD pipeline on dev push
+    tag: "dev-dev-c7697c1" # <- overwritten by CD pipeline on dev push
   resources:
     requests:
       cpu: 30m
@@ -74,4 +74,3 @@ postgres:
       memory: 256Mi
 rabbitmq:
   replicaCount: 1
-
