@@ -34,9 +34,6 @@ spec:
         {{- include "frontend.labels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 101   # nginx default non-root user
       terminationGracePeriodSeconds: 30
       containers:
         - name: frontend
@@ -64,11 +61,6 @@ spec:
             failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: [ALL]
-            readOnlyRootFilesystem: false   # nginx needs /tmp and /var/cache
 
   strategy:
     canary:
