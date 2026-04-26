@@ -37,7 +37,7 @@ transaction-service:
 notification-service:
   replicaCount: 2
   image:
-    tag: "v0.0.2" # <- overwritten by CD pipeline on main push
+    tag: "v0.0.3" # <- overwritten by CD pipeline on main push
   hpa:
     enabled: true
     minReplicas: 2
