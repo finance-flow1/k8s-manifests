@@ -1,3 +1,7 @@
+# ──────────────────────────────────────────────────────────────────────
+# BASE values — updated by CD pipeline (image.tag)
+# ──────────────────────────────────────────────────────────────────────
+
 replicaCount: 1
 
 image:
@@ -43,3 +47,32 @@ serviceAccount:
 
 networkPolicy:
   enabled: true
+
+# ── Argo Rollouts ──────────────────────────────────────────────────────────
+# Set rollout.enabled: true to replace the Deployment with an Argo Rollout.
+# The canary steps below define the progressive traffic promotion schedule.
+#
+#   setWeight    → percentage of replicas running the new image
+#   pause        → wait before proceeding (duration: "2m" or indefinite: {})
+#   analysis     → run AnalysisTemplate gates (requires rollout.analysis.enabled)
+#
+rollout:
+  enabled: true
+  revisionHistoryLimit: 3
+
+  canary:
+    steps:
+      - setWeight: 20
+      - pause:
+          duration: 2m
+      - setWeight: 50
+      - pause:
+          duration: 2m
+      - analysis:
+          templates:
+            - templateName: frontend-success-rate
+      - setWeight: 100
+
+  # ── Analysis (optional — set enabled: false if you have no HTTP access ──
+  analysis:
+    enabled: true

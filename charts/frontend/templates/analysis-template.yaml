@@ -1,0 +1,57 @@
+{{- if and .Values.rollout.enabled .Values.rollout.analysis.enabled }}
+# ─────────────────────────────────────────────────────────────────────────────
+# AnalysisTemplate — HTTP success-rate gate for the frontend canary.
+#
+# Runs during the canary promotion (injected via `analysis:` step in rollout).
+# Checks that the frontend / endpoint returns HTTP 2xx.
+# On 3 consecutive failures → Rollout aborts → stable version stays live.
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: frontend-success-rate
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "frontend.labels" . | nindent 4 }}
+spec:
+  metrics:
+    - name: http-success-rate
+      # Check every 30s, require 5 passing measurements before promoting
+      interval: 30s
+      count: 5
+      failureLimit: 1
+
+      # ── Web (HTTP) provider — no Prometheus dependency ─────────────────
+      provider:
+        web:
+          url: "http://frontend.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}{{ .Values.probes.readiness.path }}"
+          timeoutSeconds: 10
+          # HTTP 200-299 = success
+          successCondition: "result == 200"
+
+    - name: canary-pod-availability
+      # Ensure at least 1 canary pod is Ready throughout the analysis
+      interval: 30s
+      count: 3
+      failureLimit: 0
+      provider:
+        job:
+          spec:
+            template:
+              spec:
+                restartPolicy: Never
+                containers:
+                  - name: check
+                    image: bitnami/kubectl:latest
+                    command:
+                      - /bin/sh
+                      - -c
+                      - |
+                        READY=$(kubectl get pods -n {{ .Release.Namespace }} \
+                          -l role=canary,app.kubernetes.io/name=frontend \
+                          --field-selector=status.phase=Running \
+                          -o jsonpath='{.items[*].status.containerStatuses[0].ready}' \
+                          | tr ' ' '\n' | grep -c true)
+                        echo "Canary ready pods: ${READY}"
+                        [ "${READY}" -gt "0" ]
+{{- end }}

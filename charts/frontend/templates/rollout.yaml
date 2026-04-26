@@ -1,0 +1,95 @@
+{{- if .Values.rollout.enabled }}
+# ─────────────────────────────────────────────────────────────────────────────
+# Argo Rollouts — Canary deployment for the frontend SPA.
+#
+# Strategy (replica-weighted, no service-mesh required):
+#   Step 1 → 20% canary replicas receive traffic
+#   Step 2 → Pause 2 minutes (observe error rates / readiness)
+#   Step 3 → 50% canary
+#   Step 4 → Pause 2 minutes
+#   Step 5 → Optional AnalysisRun (HTTP success-rate check)
+#   Step 6 → Full promotion to 100%
+#
+# On any step failure or AnalysisRun failure, Rollouts automatically
+# aborts and scales canary back to 0 with zero downtime.
+# ─────────────────────────────────────────────────────────────────────────────
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: frontend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "frontend.labels" . | nindent 4 }}
+    app.kubernetes.io/deployment-strategy: canary
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.rollout.revisionHistoryLimit | default 3 }}
+  selector:
+    matchLabels:
+      {{- include "frontend.selectorLabels" . | nindent 6 }}
+
+  template:
+    metadata:
+      labels:
+        {{- include "frontend.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101   # nginx default non-root user
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: frontend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probes.readiness.path }}
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.liveness.path }}
+              port: {{ .Values.service.targetPort }}
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: false   # nginx needs /tmp and /var/cache
+
+  strategy:
+    canary:
+      # ── Traffic steps ──────────────────────────────────────────────────
+      steps:
+        {{- range .Values.rollout.canary.steps }}
+        - {{- toYaml . | nindent 10 }}
+        {{- end }}
+
+      # ── Canary metadata (extra label on canary pods) ───────────────────
+      canaryMetadata:
+        labels:
+          role: canary
+
+      # ── Stable metadata ────────────────────────────────────────────────
+      stableMetadata:
+        labels:
+          role: stable
+
+      # ── Anti-affinity: spread stable & canary across nodes ────────────
+      antiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          weight: 100
+{{- end }}
