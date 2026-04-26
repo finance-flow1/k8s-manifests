@@ -7,6 +7,8 @@ frontend:
   replicaCount: 1
   image:
     tag: "dev-dev-b8b9bc6" # <- overwritten by CD pipeline on dev push
+  service:
+    targetPort: 80
   resources:
     requests:
       cpu: 30m
