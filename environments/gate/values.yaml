@@ -6,7 +6,7 @@
 
 gateway:
   name: finance-gateway
-  gatewayClassName: eg
+  gatewayClassName: kgateway
   listener:
     port: 80
     protocol: HTTP
