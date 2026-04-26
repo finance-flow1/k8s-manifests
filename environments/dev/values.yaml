@@ -6,7 +6,7 @@
 frontend:
   replicaCount: 1
   image:
-    tag: "dev-dev-d9e49af" # <- overwritten by CD pipeline on dev push
+    tag: "dev-dev-3b5783f" # <- overwritten by CD pipeline on dev push
   resources:
     requests:
       cpu: 30m
