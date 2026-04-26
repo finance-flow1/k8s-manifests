@@ -68,11 +68,10 @@ rollout:
       - setWeight: 50
       - pause:
           duration: 2m
-      - analysis:
-          templates:
-            - templateName: frontend-success-rate
       - setWeight: 100
 
-  # ── Analysis (optional — set enabled: false if you have no HTTP access ──
+  # ── Analysis disabled — the zero-trust NetworkPolicy only allows ingress
+  # from the gate namespace. The web HTTP probe is blocked for internal probes.
+  # Re-enable when Prometheus is available and NetworkPolicy allows argo-rollouts.
   analysis:
-    enabled: true
+    enabled: false
