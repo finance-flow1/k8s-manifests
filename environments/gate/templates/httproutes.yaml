@@ -1,5 +1,7 @@
 ---
-# ── PROD: API routes — forward full /api/v1/* path to each microservice ──────
+# ── PROD: API routes ──────────────────────────────────────────────────────────
+# Matches requests to prod.52.71.211.10.nip.io and routes each /api/v1/* prefix
+# to the correct microservice in the finance-prod namespace.
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -11,6 +13,8 @@ spec:
   parentRefs:
     - name: finance-gateway
       namespace: gate
+  hostnames:
+    - "prod.52.71.211.10.nip.io"
   rules:
     - matches:
         - path:
@@ -57,6 +61,8 @@ spec:
   parentRefs:
     - name: finance-gateway
       namespace: gate
+  hostnames:
+    - "prod.52.71.211.10.nip.io"
   rules:
     - matches:
         - path:
@@ -67,7 +73,9 @@ spec:
           namespace: finance-prod
           port: 80
 ---
-# ── DEV: API routes — strips /dev/api/v1/ prefix before forwarding ───────────
+# ── DEV: API routes ───────────────────────────────────────────────────────────
+# Matches requests to dev.52.71.211.10.nip.io — identical path structure to prod,
+# just routes to finance-dev namespace. No /dev prefix or URLRewrite needed.
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -79,17 +87,13 @@ spec:
   parentRefs:
     - name: finance-gateway
       namespace: gate
+  hostnames:
+    - "dev.52.71.211.10.nip.io"
   rules:
     - matches:
         - path:
             type: PathPrefix
-            value: /dev/api/v1/auth
-      filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /api/v1/auth
+            value: /api/v1/auth
       backendRefs:
         - name: user-service
           namespace: finance-dev
@@ -97,13 +101,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /dev/api/v1/users
-      filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /api/v1/users
+            value: /api/v1/users
       backendRefs:
         - name: user-service
           namespace: finance-dev
@@ -111,13 +109,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /dev/api/v1/transactions
-      filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /api/v1/transactions
+            value: /api/v1/transactions
       backendRefs:
         - name: transaction-service
           namespace: finance-dev
@@ -125,13 +117,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /dev/api/v1/notifications
-      filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /api/v1/notifications
+            value: /api/v1/notifications
       backendRefs:
         - name: notification-service
           namespace: finance-dev
@@ -149,11 +135,13 @@ spec:
   parentRefs:
     - name: finance-gateway
       namespace: gate
+  hostnames:
+    - "dev.52.71.211.10.nip.io"
   rules:
     - matches:
         - path:
             type: PathPrefix
-            value: /dev
+            value: /
       backendRefs:
         - name: frontend
           namespace: finance-dev
