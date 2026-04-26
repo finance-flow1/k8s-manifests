@@ -49,7 +49,7 @@ transaction-service:
 notification-service:
   replicaCount: 1
   image:
-    tag: "dev-dev-24473da" # <- overwritten by CD pipeline on dev push
+    tag: "dev-dev-c22ab51" # <- overwritten by CD pipeline on dev push
   resources:
     requests:
       cpu: 50m
