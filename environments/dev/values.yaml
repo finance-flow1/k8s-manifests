@@ -19,7 +19,7 @@ frontend:
 user-service:
   replicaCount: 1
   image:
-    tag: "dev-dev-a0a9222" # <- overwritten by CD pipeline on dev push
+    tag: "dev-dev-22d65e3" # <- overwritten by CD pipeline on dev push
   resources:
     requests:
       cpu: 50m
