@@ -34,7 +34,7 @@ user-service:
 transaction-service:
   replicaCount: 1
   image:
-    tag: "dev-dev-92aab76" # <- overwritten by CD pipeline on dev push
+    tag: "dev-dev-8491b54" # <- overwritten by CD pipeline on dev push
   resources:
     requests:
       cpu: 50m
