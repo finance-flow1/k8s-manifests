@@ -1,0 +1,25 @@
+# =============================================================================
+# .gitignore — k8s-manifests repository
+# =============================================================================
+
+# --- Secret credentials (NEVER commit these) ---
+.env
+*.env
+!.env.example
+
+# --- Intermediate / scratch secret files ---
+# Raw (unencrypted) Kubernetes secret YAMLs that may be generated locally
+*-secret-plain.yaml
+*-raw-secret.yaml
+
+# --- OS / Editor artifacts ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# --- Helm build artifacts ---
+charts/*/charts/
+*.tgz
